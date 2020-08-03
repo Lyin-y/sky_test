@@ -1,123 +1,159 @@
-window.onload = function (){
+$(document).ready(function () {
+  console.log("123");
+  var line = document.getElementById("line");
+  // 初始化加载对象LineData
+  var LineData = echarts.init(line);
+  //未获取数据前，显示loading加载动画
+  LineData.showLoading();
+  var Round = document.getElementById("round");
+  var RoundData = echarts.init(Round);
+  RoundData.showLoading();
+  var BarChart = document.getElementById("barChart");
+  var BarChartData = echarts.init(BarChart);
+  BarChartData.showLoading();
+
+
+
 // 曲线
-var line = echarts.init(document.getElementById('line'));
-line.setOption({
-    title: {},
-    tooltip: {
-        trigger:'axis'
-    },
-    xAxis: [{
-        type:'category',
-        axisTick:{
-            show:false  //不显示坐标轴刻度线
+  $.get("https://edu.telking.com/api/?type=month", function (res) {
+    console.log(res.data.series);
+    //获取数据后，隐藏loading动画
+    LineData.hideLoading();
+    LineData.setOption(
+      (option = {
+        title: {},
+        tooltip: {
+          trigger: "axis",
         },
-        axisLine: {
-          show: false,//不显示坐标轴线
+        legend: {},
+        // xAxis代表x轴的数据
+        xAxis: {
+          type: "category",
+          axisTick: {
+            show: false, //不显示坐标轴刻度线
+          },
+          axisLine: {
+            show: false, //不显示坐标轴线
+          },
+          data: res.data.xAxis,
+          // 字段对应从json里面的字段
         },
-        data:[
-             '01/26','01/28',
-            '01/30','02/01',
-            '02/03','02/05',
-            '02/07','02/09',
-            '02/11','02/13',
-            '02/15','02/17',
-            '02/17','02/19',
-            '02/21','02/23'
-            ]
-    }],
-    yAxis: {
-        type:'value',
-        axisTick:{
-            show:false  //不显示坐标轴刻度线
+        // yAxis代表y轴的数据,不写会自动适应数据
+        yAxis: {
+          type: "value",
+          axisTick: {
+            show: false, //不显示坐标轴刻度线
+          },
+          axisLine: {
+            show: false, //不显示坐标轴线
+          },
         },
-        axisLine: {
-          show: false,//不显示坐标轴线
-        },
-    },
-    series:[{
-        type:'line',
-        smooth: true,
-        itemStyle:{
-            normal:{
-                color:'#4183F2',
-                lineStyle:{
-                    color:'#4183F2',
+        // series代表鼠标悬浮到图标上时提示的对应信息
+        series: [
+          {
+            type: "line",
+            smooth: true,
+            itemStyle: {
+              normal: {
+                color: "#4183F2",
+                lineStyle: {
+                  color: "#4183F2",
                 },
-                label:{
-                       show:true,
-                       color:'#4183F2'
-                  }
-            }
-        },
-        data:[
-            ['01/26',8972],['01/28',6448],
-            ['01/30',7456],['02/01',5824],
-            ['02/03',8123],['02/05',300],
-            ['02/07',8123],['02/09',300],
-            ['02/11',5318],['02/13',7463],
-            ['02/15',1435],['02/17',9426],
-            ['02/17',8187],['02/19',8297],
-            ['02/21',443],['02/23',9135],
-            ]
-    }]
-});
-
+                label: {
+                  show: true,
+                  color: "#4183F2",
+                },
+              },
+            },
+            data: res.data.series,
+            // 字段对应从json里面的字段
+          },
+        ],
+      })
+    );
+  });
 // 饼状
-var Round = echarts.init(document.getElementById('round'));
-Round.setOption ({
-    series:[{
-        type:'pie',
-        radius:'55%',
-        center:['50%','50%'],
-        data:[
-        {name:'MON',value:9},
-        {name:'TUE',value:11},
-        {name:'WED',value:13},
-        {name:'THU',value:10},
-        {name:'FRI',value:8},
-        {name:'SAT',value:10},
-        {name:'SUN',value:5}
-    ]
-    }]
+  $.get("https://edu.telking.com/api/?type=week", function (res) {
+    console.log(res.data);
+    var serviceData = []
+    for(var i =0;i<res.data.xAxis.length;i++){
+        var obj = new Object();
+        obj.name = res.data.xAxis[i];
+        obj.value = res.data.series[i];
+        serviceData[i]=obj;
+    }
+
+    //获取数据后，隐藏loading动画
+    RoundData.hideLoading();
+    RoundData.setOption(
+      (option = {
+        //   xAxis:[{
+        //       data:res.data.xAxis
+        //   }],
+        // series代表鼠标悬浮到图标上时提示的对应信息
+        series: [
+          {
+            type: "pie",
+            radius:'55%',
+            center:['50%','50%'],
+            data: serviceData,
+            // 字段对应从json里面的字段
+          },
+        ],
+      })
+    );
+  });
+// 柱状
+  $.get("https://edu.telking.com/api/?type=week", function (res) {
+    console.log(res.data);
+    //获取数据后，隐藏loading动画
+    BarChartData.hideLoading();
+    BarChartData.setOption(
+      (option = {
+        title: {},
+        tooltip: {
+          trigger: "axis",
+        },
+        legend: {
+            data:[]
+        },
+        // xAxis代表x轴的数据
+        xAxis: {
+          axisTick: {
+            show: false, //不显示坐标轴刻度线
+          },
+          axisLine: {
+            show: false, //不显示坐标轴线
+          },
+          data: res.data.xAxis,
+          // 字段对应从json里面的字段
+        },
+        // yAxis代表y轴的数据,不写会自动适应数据
+        yAxis: {
+          type: "value",
+          axisTick: {
+            show: false, //不显示坐标轴刻度线
+          },
+          axisLine: {
+            show: false, //不显示坐标轴线
+          },
+        },
+        // series代表鼠标悬浮到图标上时提示的对应信息
+        series: [
+          {
+            type: "bar",
+            barWidth:20,
+            itemStyle:{
+                normal:{
+                    color:'#4183F2',
+                }
+            },
+            data: res.data.series,
+            // 字段对应从json里面的字段
+          },
+        ],
+      })
+    );
+  });
+  
 });
-
-  // 柱状
-  var BarChart = echarts.init(document.getElementById('barChart'));
-  BarChart.setOption({
-  title:{
-  },
-  tooltip:{},
-  legend:{
-      data:[]
-  },
-  xAxis:{
-      axisTick:{
-          show:false  //不显示坐标轴刻度线
-      },
-      axisLine: {
-        show: false,//不显示坐标轴线
-      },
-      data:["MON","TUE","WED","THU","FRI","SAT","SUN"]
-  },
-  yAxis:{
-      axisTick:{
-          show:false  //不显示坐标轴刻度线
-      },
-      axisLine: {
-        show: false,//不显示坐标轴线
-      },
-  },
-  series:[{
-      type:'bar',
-      barWidth:20,
-      itemStyle:{
-          normal:{
-              color:'#4183F2',
-          }
-      },
-      data:[9,11,13,10,8,10,5]
-  }]
-});
-
-
-}
